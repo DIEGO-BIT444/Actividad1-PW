@@ -1,13 +1,14 @@
-const express = require('express'); //importar express
-const router = express.Router(); //mini servidor
-const { 
-    ListarIncidencias, BuscarIncidenciaID, RegistrarIncidencia, ActualizarEstadoIncidencia 
-} = require('../controllers/incidenciasController'); //mandar a llamar las funciones desde el controller
-//funciones
-router.get( '/', ListarIncidencias );
-router.get( "/:id", BuscarIncidenciaID );
-router.post( '/', RegistrarIncidencia );
-router.put("/:id/estado", ActualizarEstadoIncidencia);
-//permite que App.js pueda usar las rutas dentro de este archivo
-module.exports = router;
+// configuracion de las rutas de los diferentes tipos de endpoints para manipular la informacion de las incidencias con la ayuda del controller
+const express = require('express');
+const router = express.Router();
+const controller = require('../controllers/incidenciasControllers');
 
+//definicion de endpoints para las incidencias
+router.post('/incidencias', controller.registrarIncidencia);
+router.get('/incidencias', controller.listarIncidencias);
+router.get('/estadisticas', controller.obtenerEstadisticas);
+router.get('/incidencias/:id', controller.buscarPorId);
+router.put('/incidencias/:id/estado', controller.cambiarEstado);
+router.delete('/incidencias/:id', controller.eliminarIncidencia);
+router.get('/incidencias/:id/clasificacion', controller.obtenerClasificacion);
+module.exports = router;

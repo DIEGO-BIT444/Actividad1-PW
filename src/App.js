@@ -1,12 +1,15 @@
-const express = require('express')//importar la libreria
-const app = express() //levantar el server
-app.use(express.json()) // para que lea el formato json
-const port = 8000
-// importar las rutas
-const incidenciasRoutes = require('./routes/incidencias')
-app.use('/incidencias', incidenciasRoutes)
+const express = require('express');
+const incidenciasRoutes = require('./routes/incidencias');
 
-// levantar el servidor
-app.listen(port, () => {
-    console.log(`Server is running on http:localhost:${port}`)
-})
+const app = express();
+const PORT = 3000;
+
+// Middleware para parsear JSON
+app.use(express.json());
+
+// Establecer las rutas
+app.use('/', incidenciasRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
