@@ -36,7 +36,44 @@ const registrarIncidencia = (req, res) => {
     incidencias.push(incidencia);
     res.status(201).json({ message: 'Incidencia registrada correctamente' });
     // los otros archivos pueden acceder a las funciones flecha del controller
-    module.exports = {
-        registrarIncidencia
-    }
+
 }
+//listar todas las incidencias
+const listarIncidencias = (req, res) => { //recibe la solicitud y la res como parametros
+    res.json(incidencias);
+}
+//buscar por id
+const buscarPorId = (req, res) => {
+    const idBuscado = parseInt(req.params.id); //obtener el id de la incidencia desde los parametros de la ruta y convertirlo a numero entero
+    const incidencia = incidencias.find(i => i.id === idBuscado); //usar find para buscar la incidencia en el array
+    if (!incidencia) {
+        return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
+    }
+    res.json(incidencia);
+
+}
+//cambiar estado
+const cambiarEstado = (req, res) => {
+    const idBuscado = parseInt(req.params.id);
+    const estadoNuevo = req.body.estado;
+    const validarEstado =(estado) => {
+        return estado === "Pendiente" || estado === "En proceso" || estado === "Resuelta" || estado === "Cancelada";
+    }
+    const incidencia = incidencias.find(i => i.id === idBuscado);//buscar la incidencia con find en el array con el id
+    if (!incidencia) {
+        return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
+    } if (!validarEstado(estadoNuevo)) {                                       //retorno de errores
+        return res.status(400).json({ mensaje: 'Estado no válido' });
+    }
+    incidencia.estado = estadoNuevo;
+    res.json({mensaje: 'Estado actualizado correctamente', incidencia});
+     //actualizacion de estado en caso de que exista y el estado sea valido
+}
+module.exports = {
+        registrarIncidencia,
+        listarIncidencias,
+        buscarPorId,
+        cambiarEstado
+    }
+
+    
