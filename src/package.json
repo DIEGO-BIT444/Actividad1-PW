@@ -4,6 +4,7 @@
   "description": "Actividad Evaluada 1 de programación web utilizando node y express",
   "main": "App.js",
   "scripts": {
+    "start": "node src/App.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
