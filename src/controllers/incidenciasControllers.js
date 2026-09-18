@@ -76,7 +76,7 @@ const cambiarEstado = (req, res) => {
     const incidencia = incidencias.find(i => i.id === idBuscado);//buscar la incidencia con find en el array con el id
     if (!incidencia) {
         return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
-    } if (!validarEstado(estadoNuevo)) {                                       //retorno de errores
+    } if (!estadoNuevo) {                                       //retorno de errores
         return res.status(400).json({ mensaje: 'Estado no válido' });
     }
     switch (estadoNuevo) { //validacion de los estados posibles
