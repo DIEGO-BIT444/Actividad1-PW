@@ -10,7 +10,7 @@ const registrarIncidencia = (req, res) => {
     !textoValido(area) || 
     !textoValido(descripcion) || 
     !textoValido(prioridad)) {
-        return res.status(400).json({ error: 'Todos los campos son obligatorios y no pueden estar vacios' });
+        return res.status(400).json({ mensaje: 'Todos los campos son obligatorios y no pueden estar vacios' });
     }
     const prioridadLimpia = limpiarTexto(prioridad);
     let prioridadValida = "";
@@ -26,7 +26,7 @@ const registrarIncidencia = (req, res) => {
             prioridadValida = "Alta";
             break;
         default:
-            return res.status(400).json({ error: 'Prioridad no válida, debe ser: baja, media o alta' });
+            return res.status(400).json({ mensaje: 'Prioridad no válida, debe ser: baja, media o alta' });
     }
     // ya validados los datos, se crea un objeto incidencia y se agrega al arreglo incidencias
     const incidencia = {
@@ -38,7 +38,7 @@ const registrarIncidencia = (req, res) => {
         estado: "Pendiente"
     };
     incidencias.push(incidencia);
-    res.status(201).json({ message: 'Incidencia registrada correctamente' }); //el estado 201 indica que hubo exito
+    res.status(201).json({ mensaje: 'Incidencia registrada correctamente' }); //el estado 201 indica que hubo exito
     // los otros archivos pueden acceder a las funciones flecha del controller
 
 }
@@ -47,15 +47,14 @@ const listarIncidencias = (req, res) => { //recibe la solicitud y la res como pa
     res.json(incidencias);
 }
 //busca por nombre
-//const buscarPorNombre = (req, res) => {
-  //  const NombreBuscado = limpiarTexto(req.params.nombre);
-    //const incidencia = incidencias.find(i => i.empleado === NombreBuscado);
-    //if (!incidencia) {
-      //  return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
-    //}
-    //res.json(incidencia);
-
-//}
+/*const buscarPorNombre = (req, res) => {
+    const nombreBuscado = limpiarTexto(req.params.nombre);
+    const incidenciasEncontradas = incidencias.filter(i => limpiarTexto(i.empleado) === nombreBuscado);
+    if (incidenciasEncontradas.length === 0) {
+        return res.status(404).json({ mensaje: 'No se encontraron incidencias hechas por el empleado especificado' });
+    }
+    return res.status(200).json(incidenciasEncontradas);
+}*/
 
 //buscar por id
 const buscarPorId = (req, res) => {
@@ -76,15 +75,13 @@ const cambiarEstado = (req, res) => {
     const incidencia = incidencias.find(i => i.id === idBuscado);//buscar la incidencia con find en el array con el id
     if (!incidencia) {
         return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
-    } if (!estadoNuevo) {                                       //retorno de errores
-        return res.status(400).json({ mensaje: 'Estado no válido' });
-    }
+    } 
     switch (estadoNuevo) { //validacion de los estados posibles
         case "Pendiente":
-        case "En proceso":
+        case "En Proceso":
         case "Resuelta":
         case "Cancelada":
-            incidencia.estado=estadoNuevo;
+            incidencia.estado = estadoNuevo;
             return res.json({ mensaje: 'Estado actualizado correctamente', incidencia });
         default:
             return res.status(400).json({ 
@@ -124,16 +121,16 @@ const obtenerEstadisticas = (req, res) => {
 
 //clasificacion automatica segun prioridad
 const obtenerClasificacion = (req, res) => {
-    const idBuscado = parseInt(req.params.id); //sacar id de la incidencia usando los pams de la ruta conviertiendolo a entero
+    const idBuscado = parseInt(req.params.id); //sacar id de la incidencia usando los params de la ruta conviertiendolo a entero
     const incidencia = incidencias.find(i => i.id === idBuscado);
     if (!incidencia) {
         return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
     }
     // clasificacion de la incidencia segun la prioridad
     let clasificacion = "";
-    switch (incidencia.prioridad.trim().toLowerCase()) {
+    switch (limpiarTexto(incidencia.prioridad)) {
         case "alta":
-            clasificacion = "Crítica";
+            clasificacion = "Critica";
             break;
         case "media":
             clasificacion = "Importante";
@@ -141,6 +138,8 @@ const obtenerClasificacion = (req, res) => {
         case "baja":
             clasificacion = "Normal";
             break;
+        default:
+            clasificacion = "Desconocida";
     }
     res.json({ id: incidencia.id, clasificacion });
 }
