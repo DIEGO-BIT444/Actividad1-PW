@@ -105,15 +105,22 @@ const eliminarIncidencia = (req, res) => {
 
 //estadisticas generales
 const obtenerEstadisticas = (req, res) => {
-    const estadisticas = {
-        totalIncidencias: incidencias.length, //total de incidencias registradas y filtradas por estado
-        pendientes: incidencias.filter(i => i.estado === "Pendiente").length,
-        enProceso: incidencias.filter(i => i.estado === "En proceso").length,
-        resueltas: incidencias.filter(i => i.estado === "Resuelta").length,
-        canceladas: incidencias.filter(i => i.estado === "Cancelada").length
-    };
-    res.json(estadisticas);
-}
+
+    const estadisticas = incidencias.reduce(
+        (acc, inc) => {
+            acc.totalIncidencias++;
+            const est = limpiarTexto(inc.estado);
+            if (est === "pendiente") acc.pendientes++;
+            else if (est === "en proceso") acc.enProceso++;
+            else if (est === "resuelta") acc.resueltas++;
+            else if (est === "cancelada") acc.canceladas++;
+            return acc;
+        },
+        { totalIncidencias: 0, pendientes: 0, enProceso: 0, resueltas: 0, canceladas: 0 }
+    );
+
+    return res.status(200).json(estadisticas);
+};
 
 //clasificacion automatica segun prioridad
 const obtenerClasificacion = (req, res) => {
