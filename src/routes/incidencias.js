@@ -7,10 +7,10 @@ const controller = require('../controllers/incidenciasControllers');
 //definicion de endpoints para las incidencias
 router.post('/incidencias', controller.registrarIncidencia);
 router.get('/incidencias', controller.listarIncidencias);
-//router.get('/estadisticas', controller.obtenerEstadisticas);
+router.get('/estadisticas', controller.obtenerEstadisticas);
 router.get('/incidencias/:id', controller.buscarPorId);
 router.put('/incidencias/:id/estado', controller.cambiarEstado);
-//router.delete('/incidencias/:id', controller.eliminarIncidencia);
-//router.get('/incidencias/:id/clasificacion', controller.obtenerClasificacion);
+router.delete('/incidencias/:id', controller.eliminarIncidencia);
+router.get('/incidencias/:id/clasificacion', controller.obtenerClasificacion);
 
 module.exports = router; // le da los permisos a app.js

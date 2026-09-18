@@ -69,11 +69,62 @@ const cambiarEstado = (req, res) => {
     res.json({mensaje: 'Estado actualizado correctamente', incidencia});
      //actualizacion de estado en caso de que exista y el estado sea valido
 }
+//eliminar incidencia
+const eliminarIncidencia = (req, res) => {
+    const idBuscado = parseInt(req.params.id);
+    const index = incidencias.findIndex(i => i.id === idBuscado); //ubicar la posicion en el array con findIndex
+    if (index === -1) {
+        return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
+    }
+    incidencias.splice(index, 1); //eliminar el elemento en esa posicion(splice elimina el elemento en la posicion index y 1 elemento)
+    res.json({ mensaje: 'Incidencia eliminada correctamente' });
+}
+
+//estadisticas generales
+const obtenerEstadisticas = (req, res) => {
+    const estadisticas = {
+        totalIncidencias: incidencias.length, //total de incidencias registradas y filtradas por estado
+        pendientes: incidencias.filter(i => i.estado === "Pendiente").length,
+        enProceso: incidencias.filter(i => i.estado === "En proceso").length,
+        resueltas: incidencias.filter(i => i.estado === "Resuelta").length,
+        canceladas: incidencias.filter(i => i.estado === "Cancelada").length
+    };
+    res.json(estadisticas);
+}
+
+//clasificacion automatica segun prioridad
+const obtenerClasificacion = (req, res) => {
+    const idBuscado = parseInt(req.params.id); //sacar id de la incidencia usando los pams de la ruta conviertiendolo a entero
+    const incidencia = incidencias.find(i => i.id === idBuscado);
+    if (!incidencia) {
+        return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
+    }
+    // clasificacion de la incidencia segun la prioridad
+    let clasificacion = "";
+    switch (incidencia.prioridad.trim().toLowerCase()) {
+        case "alta":
+            clasificacion = "Crítica";
+            break;
+        case "media":
+            clasificacion = "Importante";
+            break;
+        case "baja":
+            clasificacion = "Normal";
+            break;
+    }
+    res.json({ id: incidencia.id, clasificacion });
+}
+
+
+
 module.exports = {
         registrarIncidencia,
         listarIncidencias,
         buscarPorId,
-        cambiarEstado
+        cambiarEstado,
+        eliminarIncidencia,
+        obtenerEstadisticas,
+        obtenerClasificacion
     }
 
     
