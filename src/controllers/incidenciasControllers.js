@@ -5,12 +5,16 @@ const incidencias = []; // arreglo para almacenar las incidencias
 
 const registrarIncidencia = (req, res) => {
     const { empleado, area, descripcion, prioridad } = req.body;
-    if (!textoValido(empleado) || !textoValido(area) || !textoValido(descripcion) || !textoValido(prioridad)) {
+    if (
+    !textoValido(empleado) || 
+    !textoValido(area) || 
+    !textoValido(descripcion) || 
+    !textoValido(prioridad)) {
         return res.status(400).json({ error: 'Todos los campos son obligatorios y no pueden estar vacios' });
     }
     const prioridadLimpia = limpiarTexto(prioridad);
     let prioridadValida = "";
-    // se utiliza un switch para validar la prioridad y asignar un valor válido
+    // se utiliza un switch para validar la prioridad y asignar el formato correcto
     switch (prioridadLimpia) {
         case "baja":
             prioridadValida = "Baja";
@@ -34,7 +38,7 @@ const registrarIncidencia = (req, res) => {
         estado: "Pendiente"
     };
     incidencias.push(incidencia);
-    res.status(201).json({ message: 'Incidencia registrada correctamente' });
+    res.status(201).json({ message: 'Incidencia registrada correctamente' }); //el estado 201 indica que hubo exito
     // los otros archivos pueden acceder a las funciones flecha del controller
 
 }
@@ -42,32 +46,51 @@ const registrarIncidencia = (req, res) => {
 const listarIncidencias = (req, res) => { //recibe la solicitud y la res como parametros
     res.json(incidencias);
 }
+//busca por nombre
+//const buscarPorNombre = (req, res) => {
+  //  const NombreBuscado = limpiarTexto(req.params.nombre);
+    //const incidencia = incidencias.find(i => i.empleado === NombreBuscado);
+    //if (!incidencia) {
+      //  return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
+    //}
+    //res.json(incidencia);
+
+//}
+
 //buscar por id
 const buscarPorId = (req, res) => {
-    const idBuscado = parseInt(req.params.id); //obtener el id de la incidencia desde los parametros de la ruta y convertirlo a numero entero
-    const incidencia = incidencias.find(i => i.id === idBuscado); //usar find para buscar la incidencia en el array
+    const idBuscado = parseInt(req.params.id);
+    const incidencia = incidencias.find(i => i.id === idBuscado);
     if (!incidencia) {
         return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
     }
     res.json(incidencia);
 
 }
+
 //cambiar estado
 const cambiarEstado = (req, res) => {
     const idBuscado = parseInt(req.params.id);
     const estadoNuevo = req.body.estado;
-    const validarEstado =(estado) => {
-        return estado === "Pendiente" || estado === "En proceso" || estado === "Resuelta" || estado === "Cancelada";
-    }
+   
     const incidencia = incidencias.find(i => i.id === idBuscado);//buscar la incidencia con find en el array con el id
     if (!incidencia) {
         return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
     } if (!validarEstado(estadoNuevo)) {                                       //retorno de errores
         return res.status(400).json({ mensaje: 'Estado no válido' });
     }
-    incidencia.estado = estadoNuevo;
-    res.json({mensaje: 'Estado actualizado correctamente', incidencia});
-     //actualizacion de estado en caso de que exista y el estado sea valido
+    switch (estadoNuevo) { //validacion de los estados posibles
+        case "Pendiente":
+        case "En proceso":
+        case "Resuelta":
+        case "Cancelada":
+            incidencia.estado=estadoNuevo;
+            return res.json({ mensaje: 'Estado actualizado correctamente', incidencia });
+        default:
+            return res.status(400).json({ 
+                mensaje: 'Estado no válido' });
+    }
+
 }
 //eliminar incidencia
 const eliminarIncidencia = (req, res) => {
@@ -76,21 +99,28 @@ const eliminarIncidencia = (req, res) => {
     if (index === -1) {
         return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
     }
-    incidencias.splice(index, 1); //eliminar el elemento en esa posicion(splice elimina el elemento en la posicion index y 1 elemento)
+    incidencias.splice(index, 1); //eliminar el elemento en esa posicion(splice elimina el elemento en la posicion index y el 1 indica que se elimina un solo elemento)
     res.json({ mensaje: 'Incidencia eliminada correctamente' });
 }
 
 //estadisticas generales
 const obtenerEstadisticas = (req, res) => {
-    const estadisticas = {
-        totalIncidencias: incidencias.length, //total de incidencias registradas y filtradas por estado
-        pendientes: incidencias.filter(i => i.estado === "Pendiente").length,
-        enProceso: incidencias.filter(i => i.estado === "En proceso").length,
-        resueltas: incidencias.filter(i => i.estado === "Resuelta").length,
-        canceladas: incidencias.filter(i => i.estado === "Cancelada").length
-    };
-    res.json(estadisticas);
-}
+
+    const estadisticas = incidencias.reduce(
+        (acc, inc) => {
+            acc.totalIncidencias++;
+            const est = limpiarTexto(inc.estado);
+            if (est === "pendiente") acc.pendientes++;
+            else if (est === "en proceso") acc.enProceso++;
+            else if (est === "resuelta") acc.resueltas++;
+            else if (est === "cancelada") acc.canceladas++;
+            return acc;
+        },
+        { totalIncidencias: 0, pendientes: 0, enProceso: 0, resueltas: 0, canceladas: 0 }
+    );
+
+    return res.status(200).json(estadisticas);
+};
 
 //clasificacion automatica segun prioridad
 const obtenerClasificacion = (req, res) => {
@@ -120,6 +150,7 @@ const obtenerClasificacion = (req, res) => {
 module.exports = {
         registrarIncidencia,
         listarIncidencias,
+        //buscarPorNombre,
         buscarPorId,
         cambiarEstado,
         eliminarIncidencia,
