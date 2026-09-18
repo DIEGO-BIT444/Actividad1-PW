@@ -7,7 +7,7 @@ const controller = require('../controllers/incidenciasControllers');
 //definicion de endpoints para las incidencias
 router.post('/incidencias', controller.registrarIncidencia);
 router.get('/incidencias', controller.listarIncidencias);
-router.get('/incidencias/nombre/:nombre', controller.buscarPorNombre);
+//router.get('/incidencias/nombre/:nombre', controller.buscarPorNombre);
 router.get('/estadisticas', controller.obtenerEstadisticas);
 router.get('/incidencias/:id', controller.buscarPorId);
 router.put('/incidencias/:id/estado', controller.cambiarEstado);

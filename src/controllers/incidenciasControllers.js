@@ -143,7 +143,7 @@ const obtenerClasificacion = (req, res) => {
 module.exports = {
         registrarIncidencia,
         listarIncidencias,
-        buscarPorNombre,
+        //buscarPorNombre,
         buscarPorId,
         cambiarEstado,
         eliminarIncidencia,
