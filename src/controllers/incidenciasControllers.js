@@ -47,15 +47,15 @@ const listarIncidencias = (req, res) => { //recibe la solicitud y la res como pa
     res.json(incidencias);
 }
 //busca por nombre
-const buscarPorNombre = (req, res) => {
-    const NombreBuscado = limpiarTexto(req.params.nombre);
-    const incidencia = incidencias.find(i => i.empleado === NombreBuscado);
-    if (!incidencia) {
-        return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
-    }
-    res.json(incidencia);
+//const buscarPorNombre = (req, res) => {
+  //  const NombreBuscado = limpiarTexto(req.params.nombre);
+    //const incidencia = incidencias.find(i => i.empleado === NombreBuscado);
+    //if (!incidencia) {
+      //  return res.status(404).json({ mensaje: 'Incidencia no encontrada' });
+    //}
+    //res.json(incidencia);
 
-}
+//}
 
 //buscar por id
 const buscarPorId = (req, res) => {
