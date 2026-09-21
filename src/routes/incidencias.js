@@ -14,4 +14,4 @@ router.get('/incidencias/:id/clasificacion', controller.obtenerClasificacion);
 router.put('/incidencias/:id/estado', controller.cambiarEstado);
 router.delete('/incidencias/:id', controller.eliminarIncidencia);
 
-module.exports = router; // le da los permisos a app.js
+module.exports = router; // le da los permisos a app.js para que use las rutas

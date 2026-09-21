@@ -2,6 +2,7 @@
 // importo las funciones de validación y limpieza de texto desde el archivo helpers.js
 const { textoValido, limpiarTexto } = require('../utils/helpers');
 const incidencias = []; // arreglo para almacenar las incidencias
+let siguienteID = 1;
 
 const registrarIncidencia = (req, res) => {
     const { empleado, area, descripcion, prioridad } = req.body;
@@ -30,7 +31,7 @@ const registrarIncidencia = (req, res) => {
     }
     // ya validados los datos, se crea un objeto incidencia y se agrega al arreglo incidencias
     const incidencia = {
-        id: incidencias.length + 1,
+        id: siguienteID++,
         empleado: limpiarTexto(empleado),
         area: limpiarTexto(area),
         descripcion: limpiarTexto(descripcion),
@@ -47,14 +48,14 @@ const listarIncidencias = (req, res) => { //recibe la solicitud y la res como pa
     res.json(incidencias);
 }
 //busca por nombre
-/*const buscarPorNombre = (req, res) => {
-    const nombreBuscado = limpiarTexto(req.params.nombre);
-    const incidenciasEncontradas = incidencias.filter(i => limpiarTexto(i.empleado) === nombreBuscado);
-    if (incidenciasEncontradas.length === 0) {
-        return res.status(404).json({ mensaje: 'No se encontraron incidencias hechas por el empleado especificado' });
-    }
-    return res.status(200).json(incidenciasEncontradas);
-}*/
+// const buscarPorNombre = (req, res) => {
+//     const nombreBuscado = limpiarTexto(req.params.nombre);
+//     const incidenciasEncontradas = incidencias.filter(i => limpiarTexto(i.empleado) === nombreBuscado);
+//     if (incidenciasEncontradas.length === 0) {
+//         return res.status(404).json({ mensaje: 'No se encontraron incidencias hechas por el empleado especificado' });
+//     }
+//     return res.status(200).json(incidenciasEncontradas);
+// }
 
 //buscar por id
 const buscarPorId = (req, res) => {
@@ -149,7 +150,7 @@ const obtenerClasificacion = (req, res) => {
 module.exports = {
         registrarIncidencia,
         listarIncidencias,
-        //buscarPorNombre,
+        buscarPorNombre,
         buscarPorId,
         cambiarEstado,
         eliminarIncidencia,
